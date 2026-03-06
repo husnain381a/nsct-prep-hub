@@ -78,9 +78,19 @@ const Dashboard = ({ user }) => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+ const handleLogout = async () => {
+  try {
+    setIsMenuOpen(false); // Close mobile menu immediately
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    
+    // Optional: Force a redirect if your App.js doesn't 
+    // automatically handle the session change
+    // window.location.href = '/login'; 
+  } catch (error) {
+    console.error('Error logging out:', error.message);
+  }
+};
 
   if (loading) {
     return <LoadingSpinner text="Loading dashboard..." />;
