@@ -168,7 +168,7 @@ const Dashboard = ({ user }) => {
           <div>
             <h2 className="text-lg font-semibold text-blue-900 mb-1">What is the NSCT Test?</h2>
             <p className="text-blue-800 text-sm">
-              The National Scholarship Competitive Test (NSCT) is a standardized assessment designed by HEC to evaluate students' academic proficiency and core competencies. It helps identify top talent for scholarships and advanced educational programs.
+              The National Skill Competitive Test (NSCT) is a standardized assessment designed by HEC to evaluate students' academic proficiency and core competencies. It helps identify top talent for scholarships and advanced educational programs.
             </p>
           </div>
         </div>
