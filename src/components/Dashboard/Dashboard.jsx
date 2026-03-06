@@ -1,14 +1,29 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-// Added Info and PlayCircle icons
-import { Plus, BookOpen, Clock, Users, LogOut, FileText, Trophy, Heart, Mail, Info, PlayCircle } from 'lucide-react';
+// Added Menu and X for the mobile toggle functionality
+import { 
+  Plus, 
+  BookOpen, 
+  Clock, 
+  Users, 
+  LogOut, 
+  FileText, 
+  Trophy, 
+  Heart, 
+  Mail, 
+  Info, 
+  PlayCircle, 
+  Menu, 
+  X 
+} from 'lucide-react';
 import LoadingSpinner from '../UI/LoadingSpinner';
 
 const Dashboard = ({ user }) => {
   const [quizzes, setQuizzes] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle state
   const [stats, setStats] = useState({
     totalQuizzes: 0,
     totalAttempts: 0,
@@ -73,33 +88,66 @@ const Dashboard = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      {/* --- RESPONSIVE HEADER --- */}
+      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex justify-between items-center py-3 sm:py-4">
+            {/* Logo Section */}
             <div className="flex items-center">
               <img
                 src="/logo.png"
                 alt="NSCT PrepHub Logo"
-               width={70}
+                className="w-10 sm:w-[60px]"
               />
-              <h1 className="text-2xl font-bold text-gray-900">NSCT PrepHub</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 ml-2">NSCT PrepHub</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user.user_metadata?.full_name || user.email}</span>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
+              <span className="text-gray-700 text-sm font-medium">
+                Welcome, {user.user_metadata?.full_name || user.email}
+              </span>
               <button
                 onClick={handleLogout}
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </button>
             </div>
+
+            {/* Mobile Menu Toggle Button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 animate-in slide-in-from-top duration-200">
+            <div className="px-4 pt-4 pb-3 space-y-1">
+              <p className="px-3 py-2 text-sm text-gray-500 font-medium">
+                Signed in as: <span className="text-gray-900">{user.email}</span>
+              </p>
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center px-3 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              >
+                <LogOut className="w-5 h-5 mr-3" />
+                Logout
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* Main Content */}
+      {/* --- MAIN CONTENT --- */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* NSCT Info Banner */}
@@ -162,22 +210,22 @@ const Dashboard = ({ user }) => {
                 <h2 className="text-xl font-semibold text-gray-900">My Quizzes</h2>
 
                 {/* Tutorial and Create Buttons */}
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 w-full sm:w-auto">
                   <a
                     href="https://www.youtube.com/watch?v=VMZ7lcSdVnY"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                    className="flex-1 sm:flex-none flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-medium"
                   >
                     <PlayCircle className="w-4 h-4 mr-2" />
-                    How to make a quiz?
+                    Tutorial
                   </a>
                   <Link
                     to="/create-quiz"
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="flex-1 sm:flex-none flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm font-medium"
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Create Quiz
+                    Create
                   </Link>
                 </div>
               </div>
@@ -198,16 +246,16 @@ const Dashboard = ({ user }) => {
               ) : (
                 <div className="space-y-4">
                   {quizzes.slice(0, 5).map((quiz) => (
-                    <div key={quiz.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div key={quiz.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-4">
                       <div>
                         <h3 className="font-medium text-gray-900">{quiz.title}</h3>
                         <p className="text-sm text-gray-600">
-                          {quiz.total_questions} questions • {quiz.time_limit} minutes
+                          {quiz.total_questions} questions • {quiz.time_limit} mins
                         </p>
                       </div>
                       <Link
                         to={`/quiz/${quiz.id}`}
-                        className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                        className="w-full sm:w-auto text-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                       >
                         Start Quiz
                       </Link>
@@ -232,19 +280,19 @@ const Dashboard = ({ user }) => {
               ) : (
                 <div className="space-y-4">
                   {attempts.map((attempt) => (
-                    <div key={attempt.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div key={attempt.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-gray-200 rounded-lg gap-4">
                       <div>
                         <h3 className="font-medium text-gray-900">{attempt.quizzes?.title}</h3>
                         <p className="text-sm text-gray-600">
                           Score: {attempt.score}/{attempt.quizzes?.total_questions} ({attempt.percentage}%)
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 mt-1">
                           {new Date(attempt.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <Link
                         to={`/review/${attempt.id}`}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        className="w-full sm:w-auto text-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                       >
                         Review
                       </Link>
@@ -257,42 +305,33 @@ const Dashboard = ({ user }) => {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* --- FOOTER --- */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-
-            {/* Developed By */}
-            <div className="text-gray-500 text-sm flex items-center mb-4 md:mb-0">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div className="text-gray-500 text-sm flex items-center justify-center">
               Developed with <Heart className="w-4 h-4 text-red-500 mx-1 fill-current" />
               <a
                 href="https://www.husnainmazhar.site/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-1 hover:text-blue-600 transition-colors"
+                className="ml-1 font-medium hover:text-blue-600 transition-colors"
               >
                 Husnain Mazhar
               </a>
             </div>
 
-            {/* Contact & Feedback */}
             <div className="flex items-center space-x-6">
-              {/* <a 
-                href="mailto:husnainmazhar002@gmail.com" 
-                className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Contact Us
-              </a> */}
               <a
-                href="https://husnainmazhar.site/#contact" target='_blank'
+                href="https://husnainmazhar.site/#contact"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Provide Feedback
+                Feedback
               </a>
             </div>
-
           </div>
         </div>
       </footer>
