@@ -222,7 +222,7 @@ const Dashboard = ({ user }) => {
                 {/* Tutorial and Create Buttons */}
                 <div className="flex items-center space-x-3 w-full sm:w-auto">
                   <a
-                    href="https://www.youtube.com/watch?v=VMZ7lcSdVnY"
+                    href="https://www.youtube.com/watch?v=r6SyDDWYnYE"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 sm:flex-none flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-medium"
