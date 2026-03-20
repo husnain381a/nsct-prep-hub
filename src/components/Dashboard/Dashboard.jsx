@@ -322,7 +322,7 @@ const Dashboard = ({ user }) => {
             <div className="text-gray-500 text-sm flex items-center justify-center">
               Developed with <Heart className="w-4 h-4 text-red-500 mx-1 fill-current" />
               <a
-                href="https://www.husnainmazhar.site/"
+                href="https://www.husnainmazhar.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ml-1 font-medium hover:text-blue-600 transition-colors"
@@ -333,7 +333,7 @@ const Dashboard = ({ user }) => {
 
             <div className="flex items-center space-x-6">
               <a
-                href="https://husnainmazhar.site/#contact"
+                href="https://husnainmazhar.com/#contact"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
