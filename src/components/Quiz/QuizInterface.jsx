@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Clock, Flag, Save, Send, AlertTriangle, ArrowLeft, ArrowRight } from 'lucide-react';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import WorkspaceHeader from '../UI/WorkspaceHeader';
 
 const QuizInterface = ({ user }) => {
   const { quizId } = useParams();
@@ -273,8 +274,8 @@ const QuizInterface = ({ user }) => {
 
   if (!quiz || questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
+      <div className="quiz-workspace grid place-items-center p-4">
+        <div className="workspace-panel p-6 text-center">
           <p className="text-gray-600 mb-4">Quiz not found or no questions available.</p>
           <button
             onClick={() => navigate('/dashboard')}
@@ -290,37 +291,25 @@ const QuizInterface = ({ user }) => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">{quiz.title}</h1>
-              <p className="text-sm text-gray-600">Question {currentQuestionIndex + 1} of {questions.length}</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className={`flex items-center px-3 py-2 rounded-lg ${timeRemaining < 300 ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
-                <Clock className="w-4 h-4 mr-2" />
-                <span className="font-mono font-medium">{formatTime(timeRemaining)}</span>
-              </div>
-              <button
-                onClick={() => setShowSubmitModal(true)}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Submit Quiz
-              </button>
-            </div>
+    <div className="quiz-workspace">
+      <WorkspaceHeader title={quiz.title} subtitle={`Question ${currentQuestionIndex + 1} of ${questions.length}`} sticky>
+        <div className="workspace-actions">
+          <div className={`flex items-center px-3 py-2 rounded-lg ${timeRemaining < 300 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+            <Clock className="w-4 h-4 mr-2" aria-hidden="true" />
+            <span className="sr-only">Time remaining</span>
+            <span className="font-mono font-medium">{formatTime(timeRemaining)}</span>
           </div>
+          <button type="button" className="app-button app-button-primary" onClick={() => setShowSubmitModal(true)}>
+            <Send aria-hidden="true" size={16} /> Submit quiz
+          </button>
         </div>
-      </header>
+      </WorkspaceHeader>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Question Panel */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="workspace-panel p-4 sm:p-6">
               {/* Question */}
               <div className="mb-6">
                 <div className="flex items-start justify-between mb-4">
@@ -408,7 +397,7 @@ const QuizInterface = ({ user }) => {
 
           {/* Question Navigation Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-24">
+            <div className="workspace-panel p-4 lg:sticky lg:top-28">
               <h3 className="font-medium text-gray-900 mb-4">Question Navigation</h3>
               
               {/* Legend */}
@@ -476,7 +465,7 @@ const QuizInterface = ({ user }) => {
       {/* Submit Confirmation Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+          <div className="workspace-panel p-6 max-w-md w-full mx-4">
             <div className="flex items-center mb-4">
               <AlertTriangle className="w-6 h-6 text-yellow-600 mr-3" />
               <h3 className="text-lg font-semibold text-gray-900">Submit Quiz</h3>

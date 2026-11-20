@@ -15,6 +15,8 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!supabase) return;
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -31,13 +33,28 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  if (!supabase) {
+    return (
+      <main className="app-night grid place-items-center p-6">
+        <div className="glass-panel w-full max-w-md rounded-2xl p-6">
+          <h1 className="text-xl font-semibold">Supabase setup required</h1>
+          <p className="auth-description">
+            Set <code>VITE_SUPABASE_URL</code> to your project URL and{' '}
+            <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> to your publishable key in{' '}
+            <code>.env.local</code>, then restart the app.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return <LoadingSpinner />;
   }
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <Routes>
           <Route 
             path="/login" 
@@ -68,8 +85,8 @@ function App() {
             element={user ? <QuizReview user={user} /> : <Navigate to="/login" />} 
           />
           <Route 
-            path="/" 
-            element={<Navigate to={user ? "/dashboard" : "/login"} />} 
+            path="*"
+            element={<a href="/">Return to NSCT PrepHub</a>}
           />
         </Routes>
       </div>

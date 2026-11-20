@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Trophy, Clock, CheckCircle, XCircle, AlertCircle, ArrowLeft, Eye } from 'lucide-react';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import WorkspaceHeader from '../UI/WorkspaceHeader';
 
 const QuizResults = ({ user }) => {
   const { attemptId } = useParams();
@@ -76,8 +77,8 @@ const QuizResults = ({ user }) => {
 
   if (!attempt || !quiz) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
+      <div className="quiz-workspace grid place-items-center p-4">
+        <div className="workspace-panel p-6 text-center">
           <p className="text-gray-600 mb-4">Results not found.</p>
           <Link
             to="/dashboard"
@@ -91,21 +92,8 @@ const QuizResults = ({ user }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-4">
-            <Link to="/dashboard" className="mr-4">
-              <ArrowLeft className="w-6 h-6 text-gray-600 hover:text-gray-900" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Quiz Results</h1>
-              <p className="text-gray-600">{quiz.title}</p>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="quiz-workspace">
+      <WorkspaceHeader title="Quiz results" subtitle={quiz.title} backTo="/dashboard" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Score Card */}
@@ -131,7 +119,7 @@ const QuizResults = ({ user }) => {
 
         {/* Detailed Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <div className="flex items-center">
               <div className="bg-blue-100 p-3 rounded-full">
                 <AlertCircle className="w-6 h-6 text-blue-600" />
@@ -143,7 +131,7 @@ const QuizResults = ({ user }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <div className="flex items-center">
               <div className="bg-green-100 p-3 rounded-full">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -155,7 +143,7 @@ const QuizResults = ({ user }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <div className="flex items-center">
               <div className="bg-red-100 p-3 rounded-full">
                 <XCircle className="w-6 h-6 text-red-600" />
@@ -167,7 +155,7 @@ const QuizResults = ({ user }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <div className="flex items-center">
               <div className="bg-gray-100 p-3 rounded-full">
                 <Clock className="w-6 h-6 text-gray-600" />
@@ -182,7 +170,7 @@ const QuizResults = ({ user }) => {
 
         {/* Additional Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quiz Information</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -202,7 +190,7 @@ const QuizResults = ({ user }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="workspace-panel p-5">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Scoring Details</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -232,7 +220,7 @@ const QuizResults = ({ user }) => {
         </div>
 
         {/* Performance Analysis */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
+        <div className="workspace-panel p-5 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Analysis</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">

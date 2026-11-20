@@ -1,0 +1,7 @@
+/login /app.html 200
+/register /app.html 200
+/dashboard /app.html 200
+/create-quiz /app.html 200
+/quiz/:id /app.html 200
+/results/:id /app.html 200
+/review/:id /app.html 200

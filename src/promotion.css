@@ -1,0 +1,41 @@
+.promotion-card {
+  display: grid;
+  grid-template-columns: clamp(5.65rem, 23vw, 9rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(0.65rem, 2vw, 1.15rem);
+  max-width: 31rem;
+  padding: 0.65rem;
+  border: 1px solid #375270;
+  border-radius: 1rem;
+  background: #12263d;
+  color: #eef6ff;
+  text-decoration: none;
+}
+
+.promotion-card:hover, .promotion-card:focus-visible { border-color: #87e7fc; }
+.promotion-card:hover .promotion-link { text-decoration: underline; }
+.promotion-card img { display: block; width: 100%; height: auto; border-radius: 0.55rem; }
+.promotion-details { display: grid; gap: 0.15rem; }
+.promotion-details strong { font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+.promotion-label, .promotion-details p { color: #bfcfe2; font-size: 0.8rem; }
+.promotion-label { letter-spacing: 0.055em; text-transform: uppercase; }
+.promotion-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  color: #87e7fc;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.promotion-screen-reader {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

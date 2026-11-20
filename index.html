@@ -1,22 +1,176 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-PK" data-type="software">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon1.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>NSCT PrepHub | National Skill Competency Test Practice Platform</title>
-
-    <meta name="description" content="NSCT PrepHub is an online platform for practicing MCQ exams for the National Skill Competency Test. Create quizzes, practice mock tests, and prepare with real exam-style questions." />
-
-    <meta name="keywords" content="NSCT, National Skill Competency Test, NSCT preparation, NSCT mock test, MCQ practice, exam preparation, online quiz system, skill test preparation, Pakistan exams" />
-
-    <meta name="author" content="NSCT PrepHub" />
-
+    <title>NSCT Preparation, Practice MCQs &amp; Mock Tests | NSCT PrepHub</title>
+    <meta name="description" content="Prepare for Pakistan's National Skill Competency Test with NSCT PrepHub. Try a sample MCQ, find HEC syllabus topics, and create timed mock quizzes." />
+    <meta name="keywords" content="NSCT preparation, National Skill Competency Test, HEC NSCT, NSCT syllabus, NSCT practice MCQs, NSCT mock test, Pakistan computing students" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="page-type" content="software" />
+    <meta name="site-kind" content="software" />
+    <link rel="canonical" href="https://nsct-prep.husnain.website/" />
+    <link rel="icon" type="image/png" href="/favicon1.png" />
+    <link rel="stylesheet" href="/src/landing.css" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NSCT PrepHub" />
+    <meta property="og:url" content="https://nsct-prep.husnain.website/" />
+    <meta property="og:title" content="NSCT Preparation, Practice MCQs &amp; Mock Tests | NSCT PrepHub" />
+    <meta property="og:description" content="Try a sample NSCT MCQ, find HEC syllabus topics, and create timed mock quizzes." />
+    <meta property="og:image" content="https://nsct-prep.husnain.website/logo.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="500" />
+    <meta property="og:image:height" content="500" />
+    <meta property="og:image:alt" content="NSCT PrepHub logo" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="NSCT Preparation, Practice MCQs &amp; Mock Tests | NSCT PrepHub" />
+    <meta name="twitter:description" content="Try a sample NSCT MCQ, find HEC syllabus topics, and create timed mock quizzes." />
+    <meta name="twitter:image" content="https://nsct-prep.husnain.website/logo.png" />
+    <meta name="twitter:image:alt" content="NSCT PrepHub logo" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://nsct-prep.husnain.website/#website",
+            "url": "https://nsct-prep.husnain.website/",
+            "name": "NSCT PrepHub",
+            "inLanguage": "en-PK"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://nsct-prep.husnain.website/#webpage",
+            "url": "https://nsct-prep.husnain.website/",
+            "name": "NSCT Preparation, Practice MCQs & Mock Tests",
+            "description": "An independent guide to the National Skill Competency Test in Pakistan, with a worked sample MCQ and links to the HEC syllabus.",
+            "inLanguage": "en-PK",
+            "isPartOf": { "@id": "https://nsct-prep.husnain.website/#website" },
+            "about": { "@type": "Thing", "name": "National Skill Competency Test (NSCT)" }
+          }
+        ]
+      }
+    </script>
+    <script>
+      // Email confirmation links can return to the site's configured root URL.
+      const query = new URLSearchParams(location.search);
+      const fragment = new URLSearchParams(location.hash.slice(1));
+      if (query.has('code') || fragment.has('access_token') || fragment.has('error_description')) {
+        location.replace('/login' + location.search + location.hash);
+      }
+    </script>
   </head>
-
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header wrap">
+      <div class="header-inner glass">
+        <a class="brand" href="/">
+          <span class="brand-mark"><img src="/logo.png" width="68" height="68" alt="" /></span>
+          <span class="brand-text">
+            <strong>NSCT PrepHub</strong>
+            <span>National Skill Competency Test</span>
+          </span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#practice-question">Practice MCQ</a>
+          <a href="#study-guide">Study guide</a>
+          <a class="sign-in" href="/login">Sign in <span aria-hidden="true">&nearr;</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="wrap hero-grid">
+          <div class="hero-copy" data-enter>
+            <p class="eyebrow">For computing students in Pakistan</p>
+            <h1 id="hero-title">Prepare for <span>the NSCT</span></h1>
+            <p class="lead">Create timed mock quizzes from your own questions, practise MCQs, and review your answers after each attempt.</p>
+            <div class="hero-actions">
+              <a class="button" href="/register">Create a practice account <span aria-hidden="true">&rarr;</span></a>
+              <a class="hero-link" href="#study-guide">Explore the study guide <span aria-hidden="true">&darr;</span></a>
+            </div>
+          </div>
+
+          <div class="quiz-stage" id="practice-question" data-visual data-enter>
+            <article class="quiz-frame glass" aria-labelledby="sample-question">
+              <div class="quiz-bar">
+                <span class="quiz-label">Practice question</span>
+                <span class="quiz-topic">Data structures</span>
+              </div>
+              <div class="quiz-content">
+                <h2 id="sample-question">Which data structure removes items in the order they were added?</h2>
+                <ol class="quiz-options" role="list">
+                  <li><span aria-hidden="true">A</span> Stack</li>
+                  <li class="correct-option"><span aria-hidden="true">B</span> Queue</li>
+                  <li><span aria-hidden="true">C</span> Set</li>
+                  <li><span aria-hidden="true">D</span> Max heap</li>
+                </ol>
+                <details class="quiz-answer">
+                  <summary>
+                    <span class="show-answer">Show answer</span>
+                    <span class="hide-answer">Hide answer</span>
+                    <span class="chevron" aria-hidden="true"></span>
+                  </summary>
+                  <p><strong>B. Queue.</strong> A queue follows first in, first out (FIFO). The first item added is the first item removed.</p>
+                </details>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="guide" id="study-guide" aria-labelledby="guide-title">
+        <div class="wrap guide-grid">
+          <div class="guide-intro">
+            <h2 id="guide-title">NSCT study guide</h2>
+            <p class="lead">Start with the HEC syllabus, then use practice questions to see which topics need another pass.</p>
+          </div>
+          <div class="answers">
+            <div>
+              <h3>What is the NSCT?</h3>
+              <p>The National Skill Competency Test is a computer-based assessment run by Pakistan's Higher Education Commission (HEC). The 2026 test assessed students in the seventh and eighth semesters of computing programmes.</p>
+            </div>
+            <div>
+              <h3>What topics are on the NSCT syllabus?</h3>
+              <p>HEC's published competency areas include programming, data structures and algorithms, operating systems, databases, networks and cloud computing, and analytical skills. Use the official syllabus for the full list and topic weightings.</p>
+            </div>
+            <div>
+              <h3>How can I practise for the NSCT?</h3>
+              <p>Pick a syllabus topic, answer a short set of MCQs without notes, then review each mistake. On PrepHub, you can import your questions from a CSV, set a time limit, and review your answers after the quiz.</p>
+            </div>
+            <div>
+              <h3>Where can I find official NSCT results?</h3>
+              <p>Use <a href="https://www.hec.gov.pk/Site/NSCT-Result/default.aspx">HEC's NSCT results page</a> for official results. NSCT PrepHub is an independent practice tool.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <aside class="wrap home-promotion" aria-label="Comova Systems promotion">
+        <a class="promotion-card" href="https://www.comovasystems.com/" target="_blank" rel="noopener noreferrer sponsored">
+          <img src="/comova-systems-banner.jpg" width="576" height="480" loading="lazy" decoding="async" alt="" />
+          <div class="promotion-details">
+            <span class="promotion-label">Promotion</span>
+            <strong>Comova Systems</strong>
+            <p>Websites, custom software, AI and SEO.</p>
+            <span class="promotion-link">Visit website <span aria-hidden="true">&nearr;</span><span class="promotion-screen-reader"> (opens in a new tab)</span></span>
+          </div>
+        </a>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div class="footer-brand">
+          <a href="/">NSCT PrepHub</a>
+          <p>National Skill Competency Test preparation</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="#study-guide">Study guide</a>
+          <a href="/login">Sign in</a>
+        </nav>
+        <p class="footer-credit">Built by <a href="https://www.husnainmazhar.com/">Husnain Mazhar <span aria-hidden="true">&nearr;</span></a></p>
+      </div>
+    </footer>
   </body>
 </html>

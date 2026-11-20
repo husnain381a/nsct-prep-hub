@@ -1,352 +1,181 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight, BookOpen, ClipboardList, Clock3, LogOut, PlayCircle, Plus, Target } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-// Added Menu and X for the mobile toggle functionality
-import { 
-  Plus, 
-  BookOpen, 
-  Clock, 
-  Users, 
-  LogOut, 
-  FileText, 
-  Trophy, 
-  Heart, 
-  Mail, 
-  Info, 
-  PlayCircle, 
-  Menu, 
-  X 
-} from 'lucide-react';
+import AppBrand from '../UI/AppBrand';
 import LoadingSpinner from '../UI/LoadingSpinner';
 
-const Dashboard = ({ user }) => {
+export default function Dashboard({ user }) {
   const [quizzes, setQuizzes] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle state
-  const [stats, setStats] = useState({
-    totalQuizzes: 0,
-    totalAttempts: 0,
-    averageScore: 0
-  });
+  const [loadError, setLoadError] = useState('');
+  const [logoutError, setLogoutError] = useState('');
+  const userId = user.id;
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setLoadError('');
+
+    async function fetchDashboardData() {
+      try {
+        const [quizResult, attemptResult] = await Promise.all([
+          supabase.from('quizzes').select('*').eq('created_by', userId).order('created_at', { ascending: false }),
+          supabase.from('quiz_attempts').select('*, quizzes (title, total_questions)')
+            .eq('user_id', userId).order('created_at', { ascending: false }).limit(5),
+        ]);
+        if (!active) return;
+        setQuizzes(quizResult.error ? null : quizResult.data ?? []);
+        setAttempts(attemptResult.error ? null : attemptResult.data ?? []);
+        if (quizResult.error || attemptResult.error) setLoadError('Some practice data could not be loaded.');
+      } catch {
+        if (active) {
+          setQuizzes(null);
+          setAttempts(null);
+          setLoadError('Your practice data could not be loaded.');
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
     fetchDashboardData();
-  }, [user]);
+    return () => { active = false; };
+  }, [userId]);
 
-  const fetchDashboardData = async () => {
+  const handleLogout = async () => {
+    setLogoutError('');
     try {
-      // Fetch user's quizzes
-      const { data: quizzesData } = await supabase
-        .from('quizzes')
-        .select('*')
-        .eq('created_by', user.id)
-        .order('created_at', { ascending: false });
-
-      // Fetch user's attempts
-      const { data: attemptsData } = await supabase
-        .from('quiz_attempts')
-        .select(`
-          *,
-          quizzes (
-            title,
-            total_questions
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      setQuizzes(quizzesData || []);
-      setAttempts(attemptsData || []);
-
-      // Calculate stats
-      const totalAttempts = attemptsData?.length || 0;
-      const averageScore = totalAttempts > 0
-        ? attemptsData.reduce((sum, attempt) => sum + attempt.percentage, 0) / totalAttempts
-        : 0;
-
-      setStats({
-        totalQuizzes: quizzesData?.length || 0,
-        totalAttempts,
-        averageScore: Math.round(averageScore)
-      });
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
+      const { error } = await supabase.auth.signOut();
+      if (error) setLogoutError(error.message);
+    } catch {
+      setLogoutError('Could not sign out. Please try again.');
     }
   };
 
- const handleLogout = async () => {
-  try {
-    setIsMenuOpen(false); // Close mobile menu immediately
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    
-    // Optional: Force a redirect if your App.js doesn't 
-    // automatically handle the session change
-    // window.location.href = '/login'; 
-  } catch (error) {
-    console.error('Error logging out:', error.message);
-  }
-};
-
-  if (loading) {
-    return <LoadingSpinner text="Loading dashboard..." />;
-  }
+  const displayName = user.user_metadata?.full_name || user.email;
+  const averageScore = attempts?.length
+    ? Math.round(attempts.reduce((sum, attempt) => sum + attempt.percentage, 0) / attempts.length)
+    : null;
+  const metrics = [
+    { icon: ClipboardList, label: 'Quizzes created', value: quizzes?.length ?? '—' },
+    { icon: Clock3, label: 'Recent attempts', value: attempts?.length ?? '—' },
+    { icon: Target, label: 'Average recent score', value: averageScore === null ? '—' : `${averageScore}%` },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* --- RESPONSIVE HEADER --- */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3 sm:py-4">
-            {/* Logo Section */}
-            <div className="flex items-center">
-              <img
-                src="/logo.png"
-                alt="NSCT PrepHub Logo"
-                className="w-10 sm:w-[60px]"
-              />
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 ml-2">NSCT PrepHub</h1>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <span className="text-gray-700 text-sm font-medium">
-                Welcome, {user.user_metadata?.full_name || user.email}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </button>
-            </div>
-
-            {/* Mobile Menu Toggle Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none"
-              >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Dropdown Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 animate-in slide-in-from-top duration-200">
-            <div className="px-4 pt-4 pb-3 space-y-1">
-              <p className="px-3 py-2 text-sm text-gray-500 font-medium">
-                Signed in as: <span className="text-gray-900">{user.email}</span>
-              </p>
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center px-3 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
-              >
-                <LogOut className="w-5 h-5 mr-3" />
-                Logout
-              </button>
-            </div>
-          </div>
-        )}
+    <div className="app-night dashboard-page">
+      <header className="app-wrap app-topbar glass-panel">
+        <AppBrand />
+        <button type="button" className="app-button app-button-outline" onClick={handleLogout}>
+          <LogOut aria-hidden="true" size={17} /> Sign out
+        </button>
       </header>
 
-      {/* --- MAIN CONTENT --- */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* NSCT Info Banner */}
-        <div className="bg-blue-50 rounded-xl p-6 border border-blue-100 mb-8 flex flex-col sm:flex-row items-start sm:items-center">
-          <div className="bg-blue-100 p-3 rounded-full mr-0 sm:mr-4 mb-4 sm:mb-0 flex-shrink-0">
-            <Info className="w-6 h-6 text-blue-600" />
-          </div>
+      <main className="app-wrap dashboard-content">
+        <section className="dashboard-hero glass-panel" aria-labelledby="dashboard-title">
           <div>
-            <h2 className="text-lg font-semibold text-blue-900 mb-1">What is the NSCT Test?</h2>
-            <p className="text-blue-800 text-sm">
-              The National Skill Competitive Test (NSCT) is a standardized assessment designed by HEC to evaluate students' academic proficiency and core competencies. It helps identify top talent for scholarships and advanced educational programs.
-            </p>
+            <p className="dashboard-greeting">Welcome, {displayName}</p>
+            <h1 id="dashboard-title">Practice dashboard</h1>
+            <p>Build timed quizzes, pick one to practise, or revisit a recent attempt.</p>
           </div>
-        </div>
+          <Link className="app-button app-button-primary" to="/create-quiz"><Plus aria-hidden="true" size={19} /> Create a quiz</Link>
+        </section>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Quizzes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalQuizzes}</p>
-              </div>
-            </div>
-          </div>
+        {logoutError && <p className="auth-message auth-error" role="alert">{logoutError}</p>}
+        {loadError && <p className="auth-message auth-error" role="alert">{loadError}</p>}
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center">
-              <div className="bg-green-100 p-3 rounded-full">
-                <Users className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Attempts</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalAttempts}</p>
-              </div>
-            </div>
-          </div>
+        {loading ? <LoadingSpinner text="Loading your practice data…" compact /> : (
+          <>
+            <dl className="dashboard-metrics" aria-label="Practice overview">
+              {metrics.map(({ icon: Icon, label, value }) => (
+                <div className="dashboard-metric glass-panel" key={label}>
+                  <span className="app-icon"><Icon aria-hidden="true" size={20} /></span>
+                  <div><dt>{label}</dt><dd>{value}</dd></div>
+                </div>
+              ))}
+            </dl>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center">
-              <div className="bg-yellow-100 p-3 rounded-full">
-                <Trophy className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Average Score</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.averageScore}%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* My Quizzes */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center flex-wrap gap-4">
-                <h2 className="text-xl font-semibold text-gray-900">My Quizzes</h2>
-
-                {/* Tutorial and Create Buttons */}
-                <div className="flex items-center space-x-3 w-full sm:w-auto">
-                  <a
-                    href="https://www.youtube.com/watch?v=r6SyDDWYnYE"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 sm:flex-none flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-medium"
-                  >
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Tutorial
+            <div className="dashboard-lists">
+              <section className="dashboard-list glass-panel" aria-labelledby="quizzes-heading">
+                <div className="dashboard-section-heading">
+                  <h2 id="quizzes-heading">My quizzes</h2>
+                  <a className="app-button app-button-outline" href="https://www.youtube.com/watch?v=r6SyDDWYnYE" target="_blank" rel="noopener noreferrer">
+                    <PlayCircle aria-hidden="true" size={17} /> Tutorial
                   </a>
-                  <Link
-                    to="/create-quiz"
-                    className="flex-1 sm:flex-none flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm font-medium"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create
-                  </Link>
                 </div>
-              </div>
-            </div>
+                {quizzes?.length ? (
+                  <ul className="dashboard-rows">
+                    {quizzes.slice(0, 5).map((quiz) => (
+                      <li key={quiz.id}>
+                        <div><h3>{quiz.title}</h3><p>{quiz.total_questions} questions · {quiz.time_limit} min</p></div>
+                        <Link className="app-button app-button-outline" to={`/quiz/${quiz.id}`}>
+                          Start quiz <ArrowRight aria-hidden="true" size={16} />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="dashboard-empty">
+                    <span className="app-icon"><ClipboardList aria-hidden="true" size={22} /></span>
+                    <h3>{quizzes === null ? 'Quizzes unavailable' : 'No quizzes yet'}</h3>
+                    {quizzes !== null && <p>Create a quiz to import questions and set a time limit.</p>}
+                  </div>
+                )}
+              </section>
 
-            <div className="p-6">
-              {quizzes.length === 0 ? (
-                <div className="text-center py-8">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No quizzes created yet</p>
-                  <Link
-                    to="/create-quiz"
-                    className="text-blue-600 hover:text-blue-700 font-medium mt-2 inline-block"
-                  >
-                    Create your first quiz
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {quizzes.slice(0, 5).map((quiz) => (
-                    <div key={quiz.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-4">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{quiz.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          {quiz.total_questions} questions • {quiz.time_limit} mins
-                        </p>
-                      </div>
-                      <Link
-                        to={`/quiz/${quiz.id}`}
-                        className="w-full sm:w-auto text-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                      >
-                        Start Quiz
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <section className="dashboard-list glass-panel" aria-labelledby="attempts-heading">
+                <div className="dashboard-section-heading"><h2 id="attempts-heading">Recent attempts</h2></div>
+                {attempts?.length ? (
+                  <ul className="dashboard-rows">
+                    {attempts.map((attempt) => (
+                      <li key={attempt.id}>
+                        <div>
+                          <h3>{attempt.quizzes?.title ?? 'Quiz'}</h3>
+                          <p>Score {attempt.score}/{attempt.quizzes?.total_questions ?? attempt.total_questions} ({attempt.percentage}%)</p>
+                          <p>{new Date(attempt.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <Link className="app-button app-button-outline" to={`/review/${attempt.id}`}>
+                          Review <ArrowRight aria-hidden="true" size={16} />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="dashboard-empty">
+                    <span className="app-icon"><Clock3 aria-hidden="true" size={22} /></span>
+                    <h3>{attempts === null ? 'Attempts unavailable' : 'No attempts yet'}</h3>
+                    {attempts !== null && <p>Take a quiz to see your score and review your answers here.</p>}
+                  </div>
+                )}
+              </section>
             </div>
-          </div>
+          </>
+        )}
 
-          {/* Recent Attempts */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Recent Attempts</h2>
+        <aside className="dashboard-guide glass-panel" aria-label="NSCT study guide">
+          <span className="app-icon"><BookOpen aria-hidden="true" size={20} /></span>
+          <div><strong>NSCT study guide</strong><p>Find test topics and try a practice question.</p></div>
+          <a className="app-button app-button-outline" href="/#study-guide">Open guide <ArrowUpRight aria-hidden="true" size={16} /></a>
+        </aside>
+        <aside aria-label="Comova Systems promotion">
+          <a className="promotion-card" href="https://www.comovasystems.com/" target="_blank" rel="noopener noreferrer sponsored">
+            <img src="/comova-systems-banner.jpg" width={576} height={480} loading="lazy" decoding="async" alt="" />
+            <div className="promotion-details">
+              <span className="promotion-label">Promotion</span>
+              <strong>Comova Systems</strong>
+              <p>Websites, custom software, AI and SEO.</p>
+              <span className="promotion-link">Visit website <ArrowUpRight aria-hidden="true" size={14} /><span className="promotion-screen-reader"> (opens in a new tab)</span></span>
             </div>
-            <div className="p-6">
-              {attempts.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No quiz attempts yet</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {attempts.map((attempt) => (
-                    <div key={attempt.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-gray-200 rounded-lg gap-4">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{attempt.quizzes?.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          Score: {attempt.score}/{attempt.quizzes?.total_questions} ({attempt.percentage}%)
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(attempt.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Link
-                        to={`/review/${attempt.id}`}
-                        className="w-full sm:w-auto text-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        Review
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          </a>
+        </aside>
       </main>
 
-      {/* --- FOOTER --- */}
-      <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-            <div className="text-gray-500 text-sm flex items-center justify-center">
-              Developed with <Heart className="w-4 h-4 text-red-500 mx-1 fill-current" />
-              <a
-                href="https://www.husnainmazhar.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-1 font-medium hover:text-blue-600 transition-colors"
-              >
-                Husnain Mazhar
-              </a>
-            </div>
-
-            <div className="flex items-center space-x-6">
-              <a
-                href="https://husnainmazhar.com/#contact"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors"
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                Feedback
-              </a>
-            </div>
-          </div>
-        </div>
+      <footer className="app-wrap dashboard-footer">
+        <p>Built by <a href="https://www.husnainmazhar.com/">Husnain Mazhar</a></p>
+        <a href="https://husnainmazhar.com/#contact">Feedback <ArrowUpRight aria-hidden="true" size={15} /></a>
       </footer>
     </div>
   );
-};
-
-export default Dashboard;
+}

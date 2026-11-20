@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { ArrowLeft, CheckCircle, XCircle, AlertCircle, Flag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Flag, ChevronLeft, ChevronRight } from 'lucide-react';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import WorkspaceHeader from '../UI/WorkspaceHeader';
 
 const QuizReview = ({ user }) => {
   const { attemptId } = useParams();
@@ -138,8 +139,8 @@ const QuizReview = ({ user }) => {
 
   if (!attempt || !quiz || questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
+      <div className="quiz-workspace grid place-items-center p-4">
+        <div className="workspace-panel p-6 text-center">
           <p className="text-gray-600 mb-4">Review not found.</p>
           <Link
             to="/dashboard"
@@ -153,36 +154,20 @@ const QuizReview = ({ user }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center">
-              <Link to={`/results/${attemptId}`} className="mr-4">
-                <ArrowLeft className="w-6 h-6 text-gray-600 hover:text-gray-900" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Quiz Review</h1>
-                <p className="text-gray-600">{quiz.title}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">
-                Score: {Math.max(0, attempt.score)} / {attempt.total_questions * quiz.marks_per_question}
-              </p>
-              <p className="text-lg font-semibold text-gray-900">{attempt.percentage}%</p>
-            </div>
-          </div>
+    <div className="quiz-workspace">
+      <WorkspaceHeader title="Quiz review" subtitle={quiz.title} backTo={`/results/${attemptId}`} backLabel="Back to quiz results">
+        <div>
+          <p className="text-sm">Score {Math.max(0, attempt.score)} / {attempt.total_questions * quiz.marks_per_question}</p>
+          <p className="workspace-score text-lg">{attempt.percentage}%</p>
         </div>
-      </header>
+      </WorkspaceHeader>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Question Review Panel */}
           <div className="lg:col-span-3">
             {currentQuestion ? (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="workspace-panel p-4 sm:p-6">
                 {/* Question Header */}
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center">
@@ -303,7 +288,7 @@ const QuizReview = ({ user }) => {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+              <div className="workspace-panel p-4 sm:p-6 text-center">
                 <p className="text-gray-500">No questions match the current filter.</p>
               </div>
             )}
@@ -311,7 +296,7 @@ const QuizReview = ({ user }) => {
 
           {/* Navigation Panel */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-6">
+            <div className="workspace-panel p-4 lg:sticky lg:top-6">
               <h3 className="font-medium text-gray-900 mb-4">Question Navigation</h3>
               
               {/* Filter Buttons */}

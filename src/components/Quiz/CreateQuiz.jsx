@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import Papa from 'papaparse';
-import { ArrowLeft, Upload, FileText, Settings, Save, Download } from 'lucide-react';
+import { Upload, FileText, Settings, Save } from 'lucide-react';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import WorkspaceHeader from '../UI/WorkspaceHeader';
 
 const CreateQuiz = ({ user }) => {
   const navigate = useNavigate();
@@ -171,47 +172,21 @@ const CreateQuiz = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-4">
-            <Link to="/dashboard" className="mr-4">
-              <ArrowLeft className="w-6 h-6 text-gray-600 hover:text-gray-900" />
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Create New Quiz</h1>
-          </div>
-        </div>
-      </header>
+    <div className="quiz-workspace">
+      <WorkspaceHeader title="Create a quiz" subtitle="Set up a timed quiz with your own questions." backTo="/dashboard" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-8">
-            <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
-                1
-              </div>
-              <span className="ml-2 font-medium">Quiz Settings</span>
-            </div>
-            <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
-                2
-              </div>
-              <span className="ml-2 font-medium">Upload Questions</span>
-            </div>
-            <div className={`flex items-center ${step >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
-                3
-              </div>
-              <span className="ml-2 font-medium">Review & Create</span>
-            </div>
-          </div>
-        </div>
+        <ol className="workspace-progress" aria-label="Quiz creation progress">
+          {['Settings', 'Upload questions', 'Review and create'].map((label, index) => (
+            <li className="workspace-panel" aria-current={step === index + 1 ? 'step' : undefined} key={label}>
+              <span aria-hidden="true">{index + 1}</span>{label}
+            </li>
+          ))}
+        </ol>
 
         {/* Step 1: Quiz Settings */}
         {step === 1 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="workspace-panel p-4 sm:p-6">
             <div className="flex items-center mb-6">
               <Settings className="w-6 h-6 text-blue-600 mr-3" />
               <h2 className="text-xl font-semibold text-gray-900">Quiz Settings</h2>
@@ -219,10 +194,11 @@ const CreateQuiz = ({ user }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="quiz-title" className="block text-sm font-medium text-gray-700 mb-2">
                   Quiz Title *
                 </label>
                 <input
+                  id="quiz-title"
                   type="text"
                   name="title"
                   value={quizData.title}
@@ -234,10 +210,11 @@ const CreateQuiz = ({ user }) => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="quiz-description" className="block text-sm font-medium text-gray-700 mb-2">
                   Description
                 </label>
                 <textarea
+                  id="quiz-description"
                   name="description"
                   value={quizData.description}
                   onChange={handleQuizDataChange}
@@ -248,10 +225,11 @@ const CreateQuiz = ({ user }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="quiz-time-limit" className="block text-sm font-medium text-gray-700 mb-2">
                   Total Time Limit (minutes)
                 </label>
                 <input
+                  id="quiz-time-limit"
                   type="number"
                   name="timeLimit"
                   value={quizData.timeLimit}
@@ -263,10 +241,11 @@ const CreateQuiz = ({ user }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="question-time-limit" className="block text-sm font-medium text-gray-700 mb-2">
                   Per Question Time (seconds, 0 = no limit)
                 </label>
                 <input
+                  id="question-time-limit"
                   type="number"
                   name="perQuestionTime"
                   value={quizData.perQuestionTime}
@@ -278,10 +257,11 @@ const CreateQuiz = ({ user }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="marks-per-question" className="block text-sm font-medium text-gray-700 mb-2">
                   Marks per Question
                 </label>
                 <input
+                  id="marks-per-question"
                   type="number"
                   name="marksPerQuestion"
                   value={quizData.marksPerQuestion}
@@ -294,10 +274,11 @@ const CreateQuiz = ({ user }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="negative-marks" className="block text-sm font-medium text-gray-700 mb-2">
                   Negative Marks (if enabled)
                 </label>
                 <input
+                  id="negative-marks"
                   type="number"
                   name="negativeMarks"
                   value={quizData.negativeMarks}
@@ -313,39 +294,42 @@ const CreateQuiz = ({ user }) => {
               <div className="md:col-span-2 space-y-4">
                 <div className="flex items-center">
                   <input
+                    id="negative-marking"
                     type="checkbox"
                     name="negativeMarking"
                     checked={quizData.negativeMarking}
                     onChange={handleQuizDataChange}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="negative-marking" className="ml-2 text-sm text-gray-700">
                     Enable Negative Marking
                   </label>
                 </div>
 
                 <div className="flex items-center">
                   <input
+                    id="randomize-questions"
                     type="checkbox"
                     name="randomizeQuestions"
                     checked={quizData.randomizeQuestions}
                     onChange={handleQuizDataChange}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="randomize-questions" className="ml-2 text-sm text-gray-700">
                     Randomize Question Order
                   </label>
                 </div>
 
                 <div className="flex items-center">
                   <input
+                    id="randomize-options"
                     type="checkbox"
                     name="randomizeOptions"
                     checked={quizData.randomizeOptions}
                     onChange={handleQuizDataChange}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="randomize-options" className="ml-2 text-sm text-gray-700">
                     Randomize Answer Options
                   </label>
                 </div>
@@ -355,7 +339,7 @@ const CreateQuiz = ({ user }) => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setStep(2)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="app-button app-button-primary"
               >
                 Next: Upload Questions
               </button>
@@ -365,7 +349,7 @@ const CreateQuiz = ({ user }) => {
 
         {/* Step 2: Upload Questions */}
         {step === 2 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="workspace-panel p-4 sm:p-6">
             <div className="flex items-center mb-6">
               <Upload className="w-6 h-6 text-blue-600 mr-3" />
               <h2 className="text-xl font-semibold text-gray-900">Upload Questions</h2>
@@ -390,19 +374,17 @@ const CreateQuiz = ({ user }) => {
                 </button>
               </div>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <label className="cursor-pointer">
+              <label className="workspace-inset block cursor-pointer border-2 border-dashed rounded-lg p-8 text-center">
+                  <Upload className="w-12 h-12 text-blue-700 mx-auto mb-4" aria-hidden="true" />
                   <span className="text-lg font-medium text-gray-900">Upload CSV File</span>
                   <input
                     type="file"
                     accept=".csv"
                     onChange={handleFileUpload}
-                    className="hidden"
+                    className="sr-only"
                   />
-                  <p className="text-gray-600 mt-2">Click to select your CSV file</p>
-                </label>
-              </div>
+                  <span className="block text-gray-600 mt-2">Choose a CSV file from your device</span>
+              </label>
 
               {csvError && (
                 <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -437,7 +419,7 @@ const CreateQuiz = ({ user }) => {
 
         {/* Step 3: Review & Create */}
         {step === 3 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="workspace-panel p-4 sm:p-6">
             <div className="flex items-center mb-6">
               <FileText className="w-6 h-6 text-blue-600 mr-3" />
               <h2 className="text-xl font-semibold text-gray-900">Review & Create Quiz</h2>
